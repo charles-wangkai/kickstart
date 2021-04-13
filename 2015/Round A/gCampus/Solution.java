@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,8 +27,10 @@ public class Solution {
 
   static String solve(int N, int[] U, int[] V, int[] C) {
     int[][] distances = new int[N][N];
-    for (int i = 0; i < distances.length; ++i) {
-      Arrays.fill(distances[i], Integer.MAX_VALUE);
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
+        distances[i][j] = (i == j) ? 0 : Integer.MAX_VALUE;
+      }
     }
     for (int i = 0; i < U.length; ++i) {
       distances[U[i]][V[i]] = Math.min(distances[U[i]][V[i]], C[i]);
@@ -47,11 +48,7 @@ public class Solution {
     }
 
     return IntStream.range(0, U.length)
-        .filter(
-            i ->
-                IntStream.range(0, N)
-                    .allMatch(
-                        from -> Math.abs(distances[from][U[i]] - distances[from][V[i]]) != C[i]))
+        .filter(i -> C[i] != distances[U[i]][V[i]])
         .mapToObj(String::valueOf)
         .collect(Collectors.joining("\n"));
   }
