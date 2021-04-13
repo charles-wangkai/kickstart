@@ -3,6 +3,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Solution {
+  static final double LIMIT = 1e9;
+  static final int ITERATION_NUM = 100;
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -28,10 +31,9 @@ public class Solution {
   }
 
   static String solve(int[] a, int[] L, int[] R) {
-    double[] prefixProducts = new double[a.length + 1];
-    prefixProducts[0] = 1;
-    for (int i = 1; i < prefixProducts.length; ++i) {
-      prefixProducts[i] = prefixProducts[i - 1] * a[i - 1];
+    double[] prefixProductLogs = new double[a.length + 1];
+    for (int i = 1; i < prefixProductLogs.length; ++i) {
+      prefixProductLogs[i] = prefixProductLogs[i - 1] + Math.log(a[i - 1]);
     }
 
     return IntStream.range(0, L.length)
@@ -39,8 +41,23 @@ public class Solution {
             i ->
                 String.format(
                     "%.9f",
-                    Math.pow(
-                        prefixProducts[R[i] + 1] / prefixProducts[L[i]], 1.0 / (R[i] - L[i] + 1))))
+                    computeRoot(
+                        prefixProductLogs[R[i] + 1] - prefixProductLogs[L[i]], R[i] - L[i] + 1)))
         .collect(Collectors.joining("\n"));
+  }
+
+  static double computeRoot(double productLog, int exponent) {
+    double lower = 0;
+    double upper = LIMIT;
+    for (int i = 0; i < ITERATION_NUM; ++i) {
+      double middle = (lower + upper) / 2;
+      if (Math.log(middle) * exponent < productLog) {
+        lower = middle;
+      } else {
+        upper = middle;
+      }
+    }
+
+    return lower;
   }
 }
