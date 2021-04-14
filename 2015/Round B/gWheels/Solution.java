@@ -35,6 +35,8 @@ public class Solution {
       }
 
       System.out.println(String.format("Case #%d:\n%s", tc, solve(pGears, eGears, tGears, P, Q)));
+
+      System.gc();
     }
 
     sc.close();
