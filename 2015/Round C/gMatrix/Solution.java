@@ -39,38 +39,35 @@ public class Solution {
       }
     }
 
-    @SuppressWarnings("unchecked")
-    SortedMap<Integer, Integer>[] columnValueToCountMaps = new SortedMap[N];
-    for (int c = 0; c < columnValueToCountMaps.length; ++c) {
-      columnValueToCountMaps[c] = new TreeMap<>();
-      for (int r = 0; r < K - 1; ++r) {
-        updateMap(columnValueToCountMaps[c], matrix[r][c], 1);
+    int[][] leftWindowMaxs = new int[N][N - K + 1];
+    for (int r = 0; r < leftWindowMaxs.length; ++r) {
+      SortedMap<Integer, Integer> valueToCount = new TreeMap<>();
+      for (int c = 0; c < K - 1; ++c) {
+        updateMap(valueToCount, matrix[r][c], 1);
+      }
+      for (int c = K - 1; c < N; ++c) {
+        updateMap(valueToCount, matrix[r][c], 1);
+        if (c != K - 1) {
+          updateMap(valueToCount, matrix[r][c - K], -1);
+        }
+
+        leftWindowMaxs[r][c - K + 1] = valueToCount.lastKey();
       }
     }
 
     long result = 0;
-    for (int endR = K - 1; endR < N; ++endR) {
-      for (int c = 0; c < N; ++c) {
-        updateMap(columnValueToCountMaps[c], matrix[endR][c], 1);
+    for (int c = 0; c < N - K + 1; ++c) {
+      SortedMap<Integer, Integer> valueToCount = new TreeMap<>();
+      for (int r = 0; r < K - 1; ++r) {
+        updateMap(valueToCount, leftWindowMaxs[r][c], 1);
       }
-      if (endR != K - 1) {
-        for (int c = 0; c < N; ++c) {
-          updateMap(columnValueToCountMaps[c], matrix[endR - K][c], -1);
-        }
-      }
-
-      SortedMap<Integer, Integer> subMatrixValueToCount = new TreeMap<>();
-      for (int c = 0; c < K - 1; ++c) {
-        updateMap(subMatrixValueToCount, columnValueToCountMaps[c].lastKey(), 1);
-      }
-
-      for (int endC = K - 1; endC < N; ++endC) {
-        updateMap(subMatrixValueToCount, columnValueToCountMaps[endC].lastKey(), 1);
-        if (endC != K - 1) {
-          updateMap(subMatrixValueToCount, columnValueToCountMaps[endC - K].lastKey(), -1);
+      for (int r = K - 1; r < N; ++r) {
+        updateMap(valueToCount, leftWindowMaxs[r][c], 1);
+        if (r != K - 1) {
+          updateMap(valueToCount, leftWindowMaxs[r - K][c], -1);
         }
 
-        result += subMatrixValueToCount.lastKey();
+        result += valueToCount.lastKey();
       }
     }
 
