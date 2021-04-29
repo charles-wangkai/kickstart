@@ -29,10 +29,12 @@ public class Solution {
     int bed = convertToSecond(B);
     int duration = convertToSecond(X);
 
-    int result = 0;
-    int current = 0;
+    long result = 0;
+    long current = 0;
+    State[] states = new State[DAY_SECOND_NUM];
+    boolean jumped = false;
     while (D * DAY_SECOND_NUM - current > duration) {
-      int next = current + duration;
+      long next = current + duration;
       while (next != current && !isValid(up, work, home, bed, next)) {
         --next;
       }
@@ -40,8 +42,22 @@ public class Solution {
         return -1;
       }
 
-      ++result;
       current = next;
+      ++result;
+
+      int dayTime = (int) (current % DAY_SECOND_NUM);
+      if (!jumped && states[dayTime] != null) {
+        long timeDiff = current - states[dayTime].time;
+        long feedNumDiff = result - states[dayTime].feedNum;
+
+        long cycle = Math.max(0, ((D - 1) * DAY_SECOND_NUM - current) / timeDiff);
+        current += timeDiff * cycle;
+        result += feedNumDiff * cycle;
+
+        jumped = true;
+      } else {
+        states[dayTime] = new State(current, result);
+      }
     }
 
     return result;
@@ -53,9 +69,19 @@ public class Solution {
     return parts[0] * 3600 + parts[1] * 60 + parts[2];
   }
 
-  static boolean isValid(int up, int work, int home, int bed, int time) {
-    int dayTime = time % DAY_SECOND_NUM;
+  static boolean isValid(int up, int work, int home, int bed, long time) {
+    int dayTime = (int) (time % DAY_SECOND_NUM);
 
     return (dayTime >= up && dayTime < work) || (dayTime >= home && dayTime < bed);
+  }
+}
+
+class State {
+  long time;
+  long feedNum;
+
+  State(long time, long feedNum) {
+    this.time = time;
+    this.feedNum = feedNum;
   }
 }
