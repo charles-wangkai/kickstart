@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public class Solution {
@@ -40,16 +42,39 @@ public class Solution {
       y = nextY;
     }
 
-    return IntStream.range(0, intervals.length)
-        .map(
-            i ->
-                computeCoveredArea(
-                    IntStream.range(0, intervals.length)
-                        .filter(j -> j != i)
-                        .mapToObj(j -> intervals[j])
-                        .toArray(Interval[]::new)))
-        .min()
-        .getAsInt();
+    Element[] elements =
+        IntStream.range(0, intervals.length)
+            .boxed()
+            .flatMap(
+                i ->
+                    List.of(
+                        new Element(i, intervals[i].left, true),
+                        new Element(i, intervals[i].right, false))
+                        .stream())
+            .sorted(
+                Comparator.comparing((Element e) -> e.endpoint)
+                    .thenComparing(e -> e.beginOrEnd, Comparator.reverseOrder()))
+            .toArray(Element[]::new);
+
+    int[] areas = new int[N];
+    int prevEndPoint = -1;
+    Set<Integer> indices = new HashSet<>();
+    for (Element element : elements) {
+      if (indices.size() == 1) {
+        areas[indices.iterator().next()] +=
+            element.endpoint - (element.beginOrEnd ? 1 : 0) - prevEndPoint + 1;
+      }
+
+      if (element.beginOrEnd) {
+        indices.add(element.index);
+      } else {
+        indices.remove(element.index);
+      }
+
+      prevEndPoint = element.endpoint + (element.beginOrEnd ? 0 : 1);
+    }
+
+    return computeCoveredArea(intervals) - Arrays.stream(areas).max().getAsInt();
   }
 
   static int computeCoveredArea(Interval[] intervals) {
@@ -79,5 +104,17 @@ class Interval {
   Interval(int left, int right) {
     this.left = left;
     this.right = right;
+  }
+}
+
+class Element {
+  int index;
+  int endpoint;
+  boolean beginOrEnd;
+
+  Element(int index, int endpoint, boolean beginOrEnd) {
+    this.index = index;
+    this.endpoint = endpoint;
+    this.beginOrEnd = beginOrEnd;
   }
 }
