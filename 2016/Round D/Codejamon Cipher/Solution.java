@@ -1,6 +1,4 @@
-import java.util.Arrays;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Solution {
   static final int MODULUS = 1_000_000_007;
@@ -28,9 +26,12 @@ public class Solution {
   }
 
   static String solve(String[] words, String[] sentences) {
-    return Arrays.stream(sentences)
-        .map(sentence -> String.valueOf(computeOriginalNum(words, sentence)))
-        .collect(Collectors.joining(" "));
+    String[] result = new String[sentences.length];
+    for (int i = 0; i < sentences.length; ++i) {
+      result[i] = String.valueOf(computeOriginalNum(words, sentences[i]));
+    }
+
+    return String.join(" ", result);
   }
 
   static int computeOriginalNum(String[] words, String sentence) {
@@ -48,14 +49,24 @@ public class Solution {
   }
 
   static boolean isSame(String s1, String s2) {
-    return buildKey(s1).equals(buildKey(s2));
+    int[] counts1 = buildCounts(s1);
+    int[] counts2 = buildCounts(s2);
+    for (int i = 0; i < counts1.length; ++i) {
+      if (counts1[i] != counts2[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  static String buildKey(String s) {
-    return s.chars()
-        .sorted()
-        .mapToObj(ch -> String.valueOf((char) ch))
-        .collect(Collectors.joining());
+  static int[] buildCounts(String s) {
+    int[] counts = new int[26];
+    for (char ch : s.toCharArray()) {
+      ++counts[ch - 'a'];
+    }
+
+    return counts;
   }
 
   static int addMod(int x, int y) {
