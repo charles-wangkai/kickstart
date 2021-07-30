@@ -24,20 +24,23 @@ public class Solution {
   static double solve(int[] V, int K) {
     int N = V.length;
 
-    double avg = Arrays.stream(V).average().getAsDouble();
-
-    if (K == 0) {
-      return avg;
-    }
-
     int[] sorted =
         Arrays.stream(V).boxed().sorted(Comparator.reverseOrder()).mapToInt(x -> x).toArray();
 
-    double result = -1;
-    long sum = 0;
-    for (int i = 0; i < sorted.length; ++i) {
-      sum += sorted[i];
-      result = Math.max(result, (double) sum / N + (1 - (i + 1.0) / N) * avg);
+    double result = Arrays.stream(V).average().getAsDouble();
+    for (int i = 0; i < K; ++i) {
+      double next = -1;
+      long sum = 0;
+      for (int j = 0; j < sorted.length; ++j) {
+        sum += sorted[j];
+        if (sum / (j + 1.0) < result) {
+          break;
+        }
+
+        next = Math.max(next, (double) sum / N + (1 - (j + 1.0) / N) * result);
+      }
+
+      result = next;
     }
 
     return result;
