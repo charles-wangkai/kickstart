@@ -1,5 +1,7 @@
 import java.util.Arrays;
+import java.util.NavigableMap;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class Solution {
   public static void main(String[] args) {
@@ -34,28 +36,41 @@ public class Solution {
 
     int[] S = Arrays.stream(X).map(x -> x + L).toArray();
 
+    long[] prefixSums = new long[S.length];
+    for (int i = 0; i < prefixSums.length; ++i) {
+      prefixSums[i] = ((i == 0) ? 0 : prefixSums[i - 1]) + S[i];
+    }
+
+    NavigableMap<Long, Integer> prefixSumToCount = new TreeMap<>();
     long maxSum = Long.MIN_VALUE;
     int endIndex = -1;
-    long sum = 0;
     int oddCount = 0;
-    for (int i = 0; i < S.length; ++i) {
+    for (int beginIndex = 0; beginIndex < S.length; ++beginIndex) {
       while (endIndex != S.length - 1
-          && (endIndex + 1 < i
-              || (sum + S[endIndex + 1] <= D
-                  && oddCount + ((S[endIndex + 1] % 2 == 0) ? 0 : 1) <= O))) {
+          && (endIndex + 1 < beginIndex || oddCount + ((S[endIndex + 1] % 2 == 0) ? 0 : 1) <= O)) {
         ++endIndex;
-        sum += S[endIndex];
+        updateMap(prefixSumToCount, prefixSums[endIndex], 1);
         oddCount += (S[endIndex] % 2 == 0) ? 0 : 1;
       }
 
-      if (endIndex >= i) {
-        maxSum = Math.max(maxSum, sum);
+      if (endIndex >= beginIndex) {
+        long limit = ((beginIndex == 0) ? 0 : prefixSums[beginIndex - 1]) + D;
+        Long endPrefixSum = prefixSumToCount.floorKey(limit);
+        if (endPrefixSum != null) {
+          maxSum =
+              Math.max(maxSum, endPrefixSum - ((beginIndex == 0) ? 0 : prefixSums[beginIndex - 1]));
+        }
       }
 
-      sum -= S[i];
-      oddCount -= (S[i] % 2 == 0) ? 0 : 1;
+      updateMap(prefixSumToCount, prefixSums[beginIndex], -1);
+      oddCount -= (S[beginIndex] % 2 == 0) ? 0 : 1;
     }
 
     return (maxSum == Long.MIN_VALUE) ? "IMPOSSIBLE" : String.valueOf(maxSum);
+  }
+
+  static void updateMap(NavigableMap<Long, Integer> prefixSumToCount, long prefixSum, int delta) {
+    prefixSumToCount.put(prefixSum, prefixSumToCount.getOrDefault(prefixSum, 0) + delta);
+    prefixSumToCount.remove(prefixSum, 0);
   }
 }
