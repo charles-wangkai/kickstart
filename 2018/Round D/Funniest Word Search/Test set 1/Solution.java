@@ -33,22 +33,20 @@ public class Solution {
     int R = grid.length;
     int C = grid[0].length;
 
-    int[][][] prefixSums = new int[R + 1][C + 1][ALPHABET_SIZE];
-    for (int r = 0; r < R; ++r) {
-      for (int c = 0; c < C; ++c) {
-        for (int i = 0; i < ALPHABET_SIZE; ++i) {
-          prefixSums[r + 1][c + 1][i] =
-              prefixSums[r][c + 1][i]
-                  + prefixSums[r + 1][c][i]
-                  - prefixSums[r][c][i]
-                  + ((grid[r][c] == i + 'A') ? 1 : 0);
-        }
-      }
-    }
-
     boolean[] letters = new boolean[ALPHABET_SIZE];
     for (String word : words) {
       letters[word.charAt(0) - 'A'] = true;
+    }
+
+    int[][] prefixSums = new int[R + 1][C + 1];
+    for (int r = 0; r < R; ++r) {
+      for (int c = 0; c < C; ++c) {
+        prefixSums[r + 1][c + 1] =
+            prefixSums[r][c + 1]
+                + prefixSums[r + 1][c]
+                - prefixSums[r][c]
+                + (letters[grid[r][c] - 'A'] ? 1 : 0);
+      }
     }
 
     Rational funValue = new Rational(0, 1);
@@ -57,17 +55,12 @@ public class Solution {
       for (int endR = beginR; endR < R; ++endR) {
         for (int beginC = 0; beginC < C; ++beginC) {
           for (int endC = beginC; endC < C; ++endC) {
-            int matched = 0;
-            for (int i = 0; i < ALPHABET_SIZE; ++i) {
-              if (letters[i]) {
-                matched +=
-                    (prefixSums[endR + 1][endC + 1][i]
-                            - prefixSums[beginR][endC + 1][i]
-                            - prefixSums[endR + 1][beginC][i]
-                            + prefixSums[beginR][beginC][i])
-                        * 4;
-              }
-            }
+            int matched =
+                (prefixSums[endR + 1][endC + 1]
+                        - prefixSums[beginR][endC + 1]
+                        - prefixSums[endR + 1][beginC]
+                        + prefixSums[beginR][beginC])
+                    * 4;
 
             Rational f = new Rational(matched, (endR - beginR + 1) + (endC - beginC + 1));
             int cmp = compare(f, funValue);
