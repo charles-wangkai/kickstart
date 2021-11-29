@@ -3,13 +3,15 @@
 import java.util.Scanner;
 
 public class Solution {
+  static final int SMALL_N_LIMIT = 100;
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
     int T = sc.nextInt();
     for (int tc = 1; tc <= T; ++tc) {
       int L = sc.nextInt();
-      int N = sc.nextInt();
+      long N = sc.nextLong();
       long K = sc.nextLong();
 
       System.out.println(String.format("Case #%d: %d", tc, solve(L, N, K)));
@@ -18,7 +20,25 @@ public class Solution {
     sc.close();
   }
 
-  static int solve(int L, int N, long K) {
+  static long solve(int L, long N, long K) {
+    if (K <= N) {
+      return K;
+    }
+    if (N <= SMALL_N_LIMIT) {
+      return solveSmall(L, (int) N, K);
+    }
+
+    long t = (N + 1 - SMALL_N_LIMIT) / 2;
+    if (K <= 2 * t) {
+      return K;
+    }
+
+    int subResult = solveSmall(L, (int) (N - 2 * t), K - 2 * t);
+
+    return (subResult == 0) ? 0 : (2 * t + subResult);
+  }
+
+  static int solveSmall(int L, int N, long K) {
     String prefix = "";
     while (K != 0) {
       for (int i = 0; ; ++i) {
