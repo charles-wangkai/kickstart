@@ -1,9 +1,10 @@
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Solution {
+  static final int TIME_LIMIT = 100;
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -31,14 +32,15 @@ public class Solution {
     int[] sortedIndices =
         IntStream.range(0, N)
             .boxed()
-            .sorted(Comparator.comparing((Integer i) -> L[i]).reversed())
+            .sorted((i1, i2) -> -Integer.compare(L[i1] * S[i2], L[i2] * S[i1]))
             .mapToInt(x -> x)
             .toArray();
 
-    int[] dp = new int[N + 1];
+    int[] dp = new int[N * TIME_LIMIT + 1];
     for (int index : sortedIndices) {
-      for (int i = dp.length - 1; i >= 1; --i) {
-        dp[i] = Math.max(dp[i], dp[i - 1] + Math.max(0, E[index] - L[index] * S[0] * (i - 1)));
+      for (int i = dp.length - 1; i >= S[index]; --i) {
+        dp[i] =
+            Math.max(dp[i], dp[i - S[index]] + Math.max(0, E[index] - L[index] * (i - S[index])));
       }
     }
 
