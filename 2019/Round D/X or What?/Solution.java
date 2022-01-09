@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class Solution {
@@ -28,19 +30,24 @@ public class Solution {
   }
 
   static String solve(int[] A, int[] P, int[] V) {
+    SortedSet<Integer> oddIndices = new TreeSet<>();
+    for (int i = 0; i < A.length; ++i) {
+      if (Integer.bitCount(A[i]) % 2 != 0) {
+        oddIndices.add(i);
+      }
+    }
+
     int[] result = new int[P.length];
-    for (int i = 0; i < P.length; ++i) {
-      A[P[i]] = V[i];
+    for (int i = 0; i < result.length; ++i) {
+      oddIndices.remove(P[i]);
+      if (Integer.bitCount(V[i]) % 2 != 0) {
+        oddIndices.add(P[i]);
+      }
 
-      for (int beginIndex = 0; beginIndex < A.length; ++beginIndex) {
-        int xor = 0;
-        for (int endIndex = beginIndex; endIndex < A.length; ++endIndex) {
-          xor ^= A[endIndex];
-
-          if (Integer.bitCount(xor) % 2 == 0) {
-            result[i] = Math.max(result[i], endIndex - beginIndex + 1);
-          }
-        }
+      if (oddIndices.size() % 2 == 0) {
+        result[i] = A.length;
+      } else {
+        result[i] = Math.max(A.length - (oddIndices.first() + 1), oddIndices.last());
       }
     }
 
