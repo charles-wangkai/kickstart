@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Fenwick_tree
+
 import java.util.Scanner;
 
 public class Solution {
@@ -25,8 +27,12 @@ public class Solution {
   }
 
   static long solve(int[] A, String[] operations) {
-    long[] progressPrefixs = buildProgressPrefixs(A);
-    int[] alternatePrefixs = buildAlternatePrefixs(A);
+    long[] progress = new long[1 + Integer.highestOneBit(A.length) * 2];
+    long[] alternate = new long[progress.length];
+    for (int i = 0; i < A.length; ++i) {
+      add(progress, i, ((i % 2 == 0) ? 1 : -1) * (i + 1) * A[i]);
+      add(alternate, i, ((i % 2 == 0) ? 1 : -1) * A[i]);
+    }
 
     long result = 0;
     for (String operation : operations) {
@@ -35,21 +41,22 @@ public class Solution {
         int X = Integer.parseInt(parts[1]) - 1;
         int V = Integer.parseInt(parts[2]);
 
+        add(progress, X, ((X % 2 == 0) ? 1 : -1) * (X + 1) * (V - A[X]));
+        add(alternate, X, ((X % 2 == 0) ? 1 : -1) * (V - A[X]));
         A[X] = V;
-        progressPrefixs = buildProgressPrefixs(A);
-        alternatePrefixs = buildAlternatePrefixs(A);
       } else {
         int L = Integer.parseInt(parts[1]) - 1;
         int R = Integer.parseInt(parts[2]) - 1;
 
-        long progressRange = progressPrefixs[R] - ((L == 0) ? 0 : progressPrefixs[L - 1]);
-        int alternateRange = alternatePrefixs[R] - ((L == 0) ? 0 : alternatePrefixs[L - 1]);
+        long progressRange = prefixSum(progress, R) - ((L == 0) ? 0 : prefixSum(progress, L - 1));
+        long alternateRange =
+            prefixSum(alternate, R) - ((L == 0) ? 0 : prefixSum(alternate, L - 1));
 
         long score;
         if (L % 2 == 0) {
-          score = progressRange - (long) L * alternateRange;
+          score = progressRange - L * alternateRange;
         } else {
-          score = -progressRange + (long) L * alternateRange;
+          score = -progressRange + L * alternateRange;
         }
         result += score;
       }
@@ -58,21 +65,21 @@ public class Solution {
     return result;
   }
 
-  static long[] buildProgressPrefixs(int[] A) {
-    long[] result = new long[A.length];
-    for (int i = 0; i < result.length; ++i) {
-      result[i] = ((i == 0) ? 0 : result[i - 1]) + ((i % 2 == 0) ? 1 : -1) * (i + 1) * A[i];
-    }
-
-    return result;
+  static int LSB(int i) {
+    return i & -i;
   }
 
-  static int[] buildAlternatePrefixs(int[] A) {
-    int[] result = new int[A.length];
-    for (int i = 0; i < result.length; ++i) {
-      result[i] = ((i == 0) ? 0 : result[i - 1]) + ((i % 2 == 0) ? 1 : -1) * A[i];
+  static void add(long[] a, int i, int delta) {
+    if (i == 0) {
+      a[0] += delta;
+      return;
     }
+    for (; i < a.length; i += LSB(i)) a[i] += delta;
+  }
 
-    return result;
+  static long prefixSum(long[] a, int i) {
+    long sum = a[0];
+    for (; i != 0; i -= LSB(i)) sum += a[i];
+    return sum;
   }
 }
