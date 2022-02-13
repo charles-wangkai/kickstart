@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
@@ -43,20 +44,30 @@ public class Solution {
   }
 
   static int[] buildSubCounts(int[] parents, int step) {
-    int[] result = new int[parents.length];
-    for (int i = 0; i < parents.length; ++i) {
-      int c = 0;
-      int node = i;
-      while (node != -1) {
-        if (c % step == 0) {
-          ++result[node];
-        }
+    int[] stepParents = IntStream.range(0, parents.length).toArray();
+    while (step != 0) {
+      if (step % 2 != 0) {
+        stepParents = combine(stepParents, parents);
+      }
 
-        ++c;
-        node = parents[node];
+      parents = combine(parents, parents);
+      step /= 2;
+    }
+
+    int[] result = new int[parents.length];
+    Arrays.fill(result, 1);
+    for (int i = result.length - 1; i >= 0; --i) {
+      if (stepParents[i] != -1) {
+        result[stepParents[i]] += result[i];
       }
     }
 
     return result;
+  }
+
+  static int[] combine(int[] parents1, int[] parents2) {
+    return IntStream.range(0, parents1.length)
+        .map(i -> (parents1[i] == -1) ? -1 : parents2[parents1[i]])
+        .toArray();
   }
 }
