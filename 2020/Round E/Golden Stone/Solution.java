@@ -1,9 +1,15 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Solution {
+  static final long LIMIT = 1_000_000_000_000L;
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -42,7 +48,7 @@ public class Solution {
     sc.close();
   }
 
-  static int solve(int[] U, int[] V, int S, int[][] stones, int[][] recipes) {
+  static long solve(int[] U, int[] V, int S, int[][] stones, int[][] recipes) {
     int N = stones.length;
 
     int[][] distances = new int[N][N];
@@ -65,61 +71,77 @@ public class Solution {
       }
     }
 
-    int[][] costs = new int[S][N];
-    for (int i = 0; i < costs.length; ++i) {
-      Arrays.fill(costs[i], Integer.MAX_VALUE);
+    Map<Integer, List<Integer>> stoneToRecipeIndices = new HashMap<>();
+    for (int i = 0; i < recipes.length; ++i) {
+      for (int j = 0; j < recipes[i].length - 1; ++j) {
+        if (!stoneToRecipeIndices.containsKey(recipes[i][j])) {
+          stoneToRecipeIndices.put(recipes[i][j], new ArrayList<>());
+        }
+        stoneToRecipeIndices.get(recipes[i][j]).add(i);
+      }
     }
+
+    long[][] costs = new long[S][N];
+    for (int i = 0; i < costs.length; ++i) {
+      Arrays.fill(costs[i], LIMIT);
+    }
+    boolean[][] visited = new boolean[S][N];
     PriorityQueue<Element> pq = new PriorityQueue<>(Comparator.comparing(e -> e.cost));
     for (int i = 0; i < stones.length; ++i) {
       for (int stone : stones[i]) {
+        costs[stone][i] = 0;
         pq.offer(new Element(stone, i, 0));
       }
     }
     while (!pq.isEmpty()) {
       Element head = pq.poll();
-      if (costs[head.stone][head.node] == Integer.MAX_VALUE) {
-        costs[head.stone][head.node] = head.cost;
+      if (!visited[head.stone][head.node]) {
+        visited[head.stone][head.node] = true;
+
+        if (head.stone == 0) {
+          return head.cost;
+        }
 
         for (int i = 0; i < N; ++i) {
           if (distances[head.node][i] != Integer.MAX_VALUE
-              && costs[head.stone][i] == Integer.MAX_VALUE) {
+              && head.cost + distances[head.node][i] < costs[head.stone][i]) {
+            costs[head.stone][i] = head.cost + distances[head.node][i];
             pq.offer(new Element(head.stone, i, head.cost + distances[head.node][i]));
           }
         }
 
-        for (int[] recipe : recipes) {
-          boolean found = false;
+        for (int recipeIndex : stoneToRecipeIndices.getOrDefault(head.stone, List.of())) {
           boolean ready = true;
-          int sum = 0;
-          for (int i = 0; i < recipe.length - 1; ++i) {
-            if (costs[recipe[i]][head.node] == Integer.MAX_VALUE) {
+          long sum = 0;
+          for (int i = 0; i < recipes[recipeIndex].length - 1; ++i) {
+            if (costs[recipes[recipeIndex][i]][head.node] == LIMIT) {
               ready = false;
 
               break;
             }
-            sum += costs[recipe[i]][head.node];
-            if (recipe[i] == head.stone) {
-              found = true;
-            }
+            sum += costs[recipes[recipeIndex][i]][head.node];
           }
 
-          if (found && ready) {
-            pq.offer(new Element(recipe[recipe.length - 1], head.node, sum));
+          if (ready
+              && sum < costs[recipes[recipeIndex][recipes[recipeIndex].length - 1]][head.node]) {
+            costs[recipes[recipeIndex][recipes[recipeIndex].length - 1]][head.node] = sum;
+            pq.offer(
+                new Element(recipes[recipeIndex][recipes[recipeIndex].length - 1], head.node, sum));
           }
         }
       }
     }
 
-    return Arrays.stream(costs[0]).min().getAsInt();
+    return -1;
   }
 }
 
 class Element {
   int stone;
   int node;
-  int cost;
+  long cost;
 
-  Element(int stone, int node, int cost) {
+  Element(int stone, int node, long cost) {
     this.stone = stone;
     this.node = node;
     this.cost = cost;
