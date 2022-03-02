@@ -51,22 +51,19 @@ public class Solution {
       nextPs = new int[] {p - 1, p - 1, p + 1};
     }
 
-    int result = 0;
-    boolean movable = false;
+    int result = Integer.MIN_VALUE;
     for (int i = 0; i < nextRs.length; ++i) {
       if (nextRs[i] >= 0
           && nextRs[i] < visited.length
           && nextPs[i] >= 0
           && nextPs[i] < visited[nextRs[i]].length
           && !visited[nextRs[i]][nextPs[i]]) {
-        movable = true;
-
         visited[nextRs[i]][nextPs[i]] = true;
         result = Math.max(result, 1 - search(visited, otherR, otherP, nextRs[i], nextPs[i], true));
         visited[nextRs[i]][nextPs[i]] = false;
       }
     }
-    if (movable) {
+    if (result != Integer.MIN_VALUE) {
       return result;
     }
 
