@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class Solution {
   public static void main(String[] args) {
@@ -22,24 +21,28 @@ public class Solution {
   static double solve(int[] A) {
     int N = A.length;
 
+    long[] prefixSums = new long[N];
+    for (int i = 0; i < prefixSums.length; ++i) {
+      prefixSums[i] = ((i == 0) ? 0 : prefixSums[i - 1]) + A[i];
+    }
+
     double[][] expected = new double[N][N];
+    double[] leftSums = new double[N];
+    double[] rightSums = new double[N];
     for (int length = 2; length <= N; ++length) {
       for (int beginIndex = 0; beginIndex + length <= N; ++beginIndex) {
         int endIndex = beginIndex + length - 1;
-        for (int middleIndex = beginIndex; middleIndex < endIndex; ++middleIndex) {
-          expected[beginIndex][endIndex] +=
-              (computeRangeSum(A, beginIndex, endIndex)
-                      + expected[beginIndex][middleIndex]
-                      + expected[middleIndex + 1][endIndex])
-                  / (length - 1.0);
-        }
+
+        expected[beginIndex][endIndex] +=
+            prefixSums[endIndex]
+                - ((beginIndex == 0) ? 0 : prefixSums[beginIndex - 1])
+                + (leftSums[beginIndex] + rightSums[endIndex]) / (length - 1.0);
+
+        leftSums[beginIndex] += expected[beginIndex][endIndex];
+        rightSums[endIndex] += expected[beginIndex][endIndex];
       }
     }
 
     return expected[0][N - 1];
-  }
-
-  static long computeRangeSum(int[] A, int beginIndex, int endIndex) {
-    return IntStream.rangeClosed(beginIndex, endIndex).map(i -> A[i]).asLongStream().sum();
   }
 }
