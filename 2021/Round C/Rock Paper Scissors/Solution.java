@@ -1,6 +1,14 @@
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Solution {
+  static final char[] CHOICES = {'R', 'S', 'P'};
+  static final int ROUND_NUM = 60;
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -17,36 +25,77 @@ public class Solution {
   }
 
   static String solve(int X, int W, int E) {
-    if (E == W) {
-      return "RSP".repeat(60).substring(0, 60);
-      // return ("R" + "SSSSSPPPPPPRRRRRR".repeat(60)).substring(0, 60);
+    Map<String, State> codeToState = Map.of(encode(new int[] {0, 0, 0}), new State(0, ""));
+    for (int i = 0; i < ROUND_NUM; ++i) {
+      Map<String, State> nextCodeToState = new HashMap<>();
+      for (String code : codeToState.keySet()) {
+        int[] counts = decode(code);
+        State state = codeToState.get(code);
 
-      // return "RRRRSSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPRRRRRRRRRRRRRRRRRRRRR";
-    } else if (E == W / 2) {
-      // return "RSP".repeat(60).substring(0, 60);
+        double[] probs = new double[CHOICES.length];
+        int total = Arrays.stream(counts).sum();
+        for (int j = 0; j < probs.length; ++j) {
+          probs[j] = (total == 0) ? (1.0 / 3) : ((double) counts[(j + 1) % counts.length] / total);
+        }
 
-      // return "RRRSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPRRRRRRRRRRRRRRRRRRRR";
+        for (int j = 0; j < CHOICES.length; ++j) {
+          ++counts[j];
 
-      // return "RSSSSSSSPPPPPPPPPPPPRRRRRRRRRR".repeat(60).substring(0, 60);
+          double delta = 0;
+          for (int k = 0; k < CHOICES.length; ++k) {
+            int cmp = compare(j, k);
+            if (cmp == 1) {
+              delta += probs[k] * W;
+            } else if (cmp == 0) {
+              delta += probs[k] * E;
+            }
+          }
 
-      // return "RSSSPPPPRR".repeat(60).substring(0, 60);
+          String nextCode = encode(counts);
+          double nextScore = state.score + delta;
+          if (nextScore > nextCodeToState.getOrDefault(nextCode, new State(0, null)).score) {
+            nextCodeToState.put(nextCode, new State(nextScore, state.choices + CHOICES[j]));
+          }
 
-      // return ("R" + "SSSPPPPPPPRRRRRRRRRRSSSSSSSSSPPPPPP".repeat(60)).substring(0, 60);
-      return ("R" + "SSSPPPPPPPRRRRRRRRRRRRRSSSSSSSSSSSSSSSSPPPPPPP".repeat(60)).substring(0, 60);
-    } else if (E == W / 10) {
-      // return "RSSSSPPPPRRR".repeat(60).substring(0, 60);
+          --counts[j];
+        }
+      }
 
-      // return "RSP".repeat(60).substring(0, 60);
-
-      return "RSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPRRRRRRRRRRRRRRRRRRRRRRRR";
-
-      // return "RSSSSSSSPPPPPPPPPPPPPRRRRRRRRR".repeat(60).substring(0, 60);
+      codeToState = nextCodeToState;
     }
 
-    // return "RSP".repeat(20);
+    return codeToState.values().stream()
+        .max(Comparator.comparing(state -> state.score))
+        .get()
+        .choices;
+  }
 
-    // return "RSSSPPPPRR".repeat(60);
+  static int compare(int index1, int index2) {
+    int diff = index2 - index1;
+    if (diff == 2) {
+      diff = -1;
+    } else if (diff == -2) {
+      diff = 1;
+    }
 
-    return "RSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPPRRRRRRRRRRRRRRRRRRRRRRR";
+    return diff;
+  }
+
+  static int[] decode(String code) {
+    return Arrays.stream(code.split(",")).mapToInt(Integer::parseInt).toArray();
+  }
+
+  static String encode(int[] counts) {
+    return Arrays.stream(counts).mapToObj(String::valueOf).collect(Collectors.joining(","));
+  }
+}
+
+class State {
+  double score;
+  String choices;
+
+  State(double score, String choices) {
+    this.score = score;
+    this.choices = choices;
   }
 }
