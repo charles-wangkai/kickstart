@@ -37,26 +37,51 @@ public class Solution {
   }
 
   static String solve(int N, int[] X, int[] Y, int[] C, int M, int Ar, int Ac, char[] OP, int[] K) {
-    long[][] dp = new long[N][N];
+    int P = X.length;
+
+    int[][] indices = new int[N][N];
     for (int r = 0; r < N; ++r) {
-      Arrays.fill(dp[r], Long.MIN_VALUE);
+      Arrays.fill(indices[r], -1);
     }
-    dp[Ar][Ac] = 0;
+    for (int i = 0; i < X.length; ++i) {
+      indices[X[i]][Y[i]] = i;
+    }
+
+    long[][][] dp = new long[N][N][1 << P];
+    for (int r = 0; r < N; ++r) {
+      for (int c = 0; c < N; ++c) {
+        Arrays.fill(dp[r][c], Long.MIN_VALUE);
+      }
+    }
+    dp[Ar][Ac][0] = 0;
 
     for (int i = 0; i < M; ++i) {
-      long[][] nextDp = new long[N][];
+      long[][][] nextDp = new long[N][N][];
       for (int r = 0; r < N; ++r) {
-        nextDp[r] = dp[r].clone();
+        for (int c = 0; c < N; ++c) {
+          nextDp[r][c] = dp[r][c].clone();
+        }
       }
 
       for (int r = 0; r < N; ++r) {
         for (int c = 0; c < N; ++c) {
-          if (dp[r][c] != Long.MIN_VALUE) {
-            for (int d = 0; d < R_OFFSETS.length; ++d) {
-              int adjR = r + R_OFFSETS[d];
-              int adjC = c + C_OFFSETS[d];
-              if (adjR >= 0 && adjR < N && adjC >= 0 && adjC < N) {
-                nextDp[adjR][adjC] = Math.max(nextDp[adjR][adjC], evaluate(dp[r][c], OP[d], K[d]));
+          for (int mask = 0; mask < 1 << P; ++mask) {
+            if (dp[r][c][mask] != Long.MIN_VALUE) {
+              for (int d = 0; d < R_OFFSETS.length; ++d) {
+                int adjR = r + R_OFFSETS[d];
+                int adjC = c + C_OFFSETS[d];
+                if (adjR >= 0 && adjR < N && adjC >= 0 && adjC < N) {
+                  nextDp[adjR][adjC][mask] =
+                      Math.max(nextDp[adjR][adjC][mask], evaluate(dp[r][c][mask], OP[d], K[d]));
+
+                  if (indices[adjR][adjC] != -1 && (mask & (1 << indices[adjR][adjC])) == 0) {
+                    int nextMask = mask + (1 << indices[adjR][adjC]);
+                    nextDp[adjR][adjC][nextMask] =
+                        Math.max(
+                            nextDp[adjR][adjC][nextMask],
+                            evaluate(dp[r][c][mask], OP[d], K[d]) + C[indices[adjR][adjC]]);
+                  }
+                }
               }
             }
           }
@@ -66,14 +91,14 @@ public class Solution {
       dp = nextDp;
     }
 
-    long result = 0;
+    long result = Long.MIN_VALUE;
     for (int r = 0; r < N; ++r) {
       for (int c = 0; c < N; ++c) {
-        result = Math.max(result, dp[r][c]);
+        result = Math.max(result, dp[r][c][(1 << P) - 1]);
       }
     }
 
-    return String.valueOf(result);
+    return (result == Long.MIN_VALUE) ? "IMPOSSIBLE" : String.valueOf(result);
   }
 
   static long evaluate(long operand1, char operator, int operand2) {
