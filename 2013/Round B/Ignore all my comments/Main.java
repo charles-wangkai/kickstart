@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final String LEFT_COMMENT = "/*";
   static final String RIGHT_COMMENT = "*/";
 
