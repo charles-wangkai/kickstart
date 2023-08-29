@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final String[] DIGIT_WORDS = {
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
   };
