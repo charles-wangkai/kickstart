@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int STEP_LIMIT = 10000;
   static final char[] MOVES = {'N', 'E', 'S', 'W'};
   static final int[] R_OFFSETS = {-1, 0, 1, 0};
