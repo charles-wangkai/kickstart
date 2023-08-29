@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -23,7 +23,7 @@ public class Solution {
   }
 
   static boolean solve(int N, int[][] matrix) {
-    return Arrays.stream(matrix).allMatch(Solution::isPermutation)
+    return Arrays.stream(matrix).allMatch(Main::isPermutation)
         && IntStream.range(0, N * N)
             .allMatch(
                 c -> isPermutation(IntStream.range(0, N * N).map(r -> matrix[r][c]).toArray()))
