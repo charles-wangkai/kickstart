@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int DIGIT_NUM = 10;
   static final int SEGMENT_NUM = 7;
   static final String[] DISPLAYS = {
