@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int GLASS_CAPACITY = 250;
 
   public static void main(String[] args) {
