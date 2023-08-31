@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int MODULUS = 1_000_000_007;
 
   public static void main(String[] args) {
@@ -24,10 +24,10 @@ public class Solution {
                 (int)
                     IntStream.rangeClosed(i - 1, i + 1)
                         .filter(j -> j >= 0 && j < s.length())
-                        .map(j -> s.charAt(j))
+                        .map(s::charAt)
                         .distinct()
                         .count())
-        .reduce(Solution::multiplyMod)
+        .reduce(Main::multiplyMod)
         .getAsInt();
   }
 
