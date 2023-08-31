@@ -7,7 +7,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -71,9 +71,10 @@ public class Solution {
 
         for (Edge edge : edgeLists[head.city]) {
           int other = (head.city == edge.city1) ? edge.city2 : edge.city1;
-
-          pq.offer(
-              new Element(other, head.distance + edge.costs[(startHour + head.distance) % 24]));
+          if (distances[other] == Integer.MAX_VALUE) {
+            pq.offer(
+                new Element(other, head.distance + edge.costs[(startHour + head.distance) % 24]));
+          }
         }
       }
     }
