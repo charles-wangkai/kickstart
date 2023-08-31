@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Solution {
+public class Main {
   static final int GROUP_BIT_NUM = 8;
 
   public static void main(String[] args) {
@@ -27,8 +27,7 @@ public class Solution {
   }
 
   static String solve(String[] subnets) {
-    Set<String> result =
-        Arrays.stream(subnets).map(Solution::normalize).collect(Collectors.toSet());
+    Set<String> result = Arrays.stream(subnets).map(Main::normalize).collect(Collectors.toSet());
 
     for (String s : new ArrayList<>(result)) {
       if (buildAncestors(s).stream().anyMatch(result::contains)) {
