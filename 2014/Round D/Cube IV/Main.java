@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int[] R_OFFSETS = {-1, 0, 1, 0};
   static final int[] C_OFFSETS = {0, 1, 0, -1};
 
