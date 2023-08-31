@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int DAY_SECOND_NUM = 86400;
 
   public static void main(String[] args) {
