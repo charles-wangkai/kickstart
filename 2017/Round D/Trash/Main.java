@@ -4,7 +4,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final Random RANDOM = new Random();
   static final int INITIAL_A_SEARCH_SIZE = 100;
   static final double BEGIN_STEP = 100;
