@@ -7,7 +7,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int RANGE_SUM_LIMIT = 100_000_000;
   static final long PRODUCT_LIMIT = 10_000_000_000_000_000L;
 
