@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int ITERATION_NUM = 100;
 
   public static void main(String[] args) {
