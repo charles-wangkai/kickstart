@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int ITERATION_NUM = 100;
   static final Point Z_AXIS = new Point(0, 0, 1);
 
