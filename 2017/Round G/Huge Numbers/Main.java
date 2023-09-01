@@ -3,7 +3,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int N_CUT = 10;
 
   public static void main(String[] args) {
