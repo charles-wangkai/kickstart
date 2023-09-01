@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -24,9 +24,9 @@ public class Solution {
   static String solve(String[] names) {
     return Arrays.stream(names)
         .max(
-            Comparator.comparing(
-                    (String name) -> name.chars().filter(ch -> ch != ' ').distinct().count())
-                .thenComparing(Comparator.comparing((String name) -> name).reversed()))
+            Comparator.<String, Integer>comparing(
+                    name -> (int) name.chars().filter(c -> c != ' ').distinct().count())
+                .thenComparing(Comparator.reverseOrder()))
         .get();
   }
 }
