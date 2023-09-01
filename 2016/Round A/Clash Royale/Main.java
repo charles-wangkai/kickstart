@@ -1,11 +1,11 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-public class Solution {
+public class Main {
   static final int DECK_SIZE = 8;
   static final int POWER_MAP_MAX_SIZE = 5;
 
@@ -64,12 +64,13 @@ public class Solution {
 
     for (int i = 0; i < powerMaps.length; ++i) {
       long prevPower = -1;
-      List<Integer> costs = new ArrayList<>(powerMaps[i].keySet());
-      for (int cost : costs) {
-        if (powerMaps[i].get(cost) <= prevPower) {
-          powerMaps[i].remove(cost);
+      Iterator<Entry<Integer, Long>> iter = powerMaps[i].entrySet().iterator();
+      while (iter.hasNext()) {
+        Entry<Integer, Long> entry = iter.next();
+        if (entry.getValue() <= prevPower) {
+          iter.remove();
         } else {
-          prevPower = powerMaps[i].get(cost);
+          prevPower = entry.getValue();
         }
       }
     }
