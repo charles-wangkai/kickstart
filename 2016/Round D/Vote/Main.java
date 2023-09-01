@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static int totalNum;
   static int leadNum;
 
