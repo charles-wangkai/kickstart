@@ -1,9 +1,9 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int DIGIT_NUM = 19;
 
-  static int[][] c;
+  static int[][] combs;
 
   public static void main(String[] args) {
     buildC();
@@ -22,10 +22,10 @@ public class Solution {
   }
 
   static void buildC() {
-    c = new int[DIGIT_NUM + 1][DIGIT_NUM + 1];
-    for (int n = 0; n < c.length; ++n) {
+    combs = new int[DIGIT_NUM + 1][DIGIT_NUM + 1];
+    for (int n = 0; n < combs.length; ++n) {
       for (int r = 0; r <= n; ++r) {
-        c[n][r] = C(n, r);
+        combs[n][r] = C(n, r);
       }
     }
   }
@@ -41,35 +41,26 @@ public class Solution {
       limit /= 10;
     }
 
-    return search(limitDigits, new int[9], 0, DIGIT_NUM);
+    return search(limitDigits, new int[9], 0, DIGIT_NUM, 0);
   }
 
-  static long search(int[] limitDigits, int[] counts, int index, int restDigitNum) {
+  static long search(int[] limitDigits, int[] counts, int index, int restDigitNum, int digitSum) {
     if (index == counts.length - 1) {
       counts[index] = restDigitNum;
+      digitSum += index * counts[index];
 
-      return computeLegalNumForDigitSet(limitDigits, counts);
+      return (digitSum % 9 == 0) ? 0 : computeLessEqualNum(limitDigits, counts, 0);
     }
 
     long result = 0;
     for (int i = 0; i <= restDigitNum; ++i) {
       counts[index] = i;
-      result += search(limitDigits, counts, index + 1, restDigitNum - i);
+      result +=
+          search(
+              limitDigits, counts, index + 1, restDigitNum - i, digitSum + index * counts[index]);
     }
 
     return result;
-  }
-
-  static long computeLegalNumForDigitSet(int[] limitDigits, int[] counts) {
-    int digitSum = 0;
-    for (int i = 0; i < counts.length; ++i) {
-      digitSum += i * counts[i];
-    }
-    if (digitSum % 9 == 0) {
-      return 0;
-    }
-
-    return computeLessEqualNum(limitDigits, counts, 0);
   }
 
   static long computeLessEqualNum(int[] limitDigits, int[] counts, int index) {
@@ -85,7 +76,7 @@ public class Solution {
         int restDigitNum = limitDigits.length - index - 1;
         long product = 1;
         for (int i = 0; i < counts.length; ++i) {
-          product *= c[restDigitNum][counts[i]];
+          product *= combs[restDigitNum][counts[i]];
           restDigitNum -= counts[i];
         }
         result += product;
