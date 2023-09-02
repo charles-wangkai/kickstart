@@ -2,9 +2,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
+  static final long[] PLACE_VALUES_1 = buildPlaceValues(31);
+  static final long[] PLACE_VALUES_2 = buildPlaceValues(37);
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -29,15 +33,22 @@ public class Solution {
     sc.close();
   }
 
+  static long[] buildPlaceValues(int base) {
+    long[] result = new long[26];
+    for (int i = 0; i < result.length; ++i) {
+      result[i] = ((i == 0) ? 1 : result[i - 1]) * base;
+    }
+
+    return result;
+  }
+
   static int solve(String[] words, char S1, char S2, int N, int A, int B, int C, int D) {
     char[] S = generate(S1, S2, N, A, B, C, D);
 
     Map<Integer, List<String>> lengthToWords = new HashMap<>();
     for (String word : words) {
       int length = word.length();
-      if (!lengthToWords.containsKey(length)) {
-        lengthToWords.put(length, new ArrayList<>());
-      }
+      lengthToWords.putIfAbsent(length, new ArrayList<>());
       lengthToWords.get(length).add(word);
     }
 
@@ -70,54 +81,79 @@ public class Solution {
   static int computeAppearedNum(char[] S, List<String> words) {
     int length = words.iterator().next().length();
 
-    Map<String, Integer> codeToCount = new HashMap<>();
+    Map<WordKey, Integer> wordKeyToCount = new HashMap<>();
     for (String word : words) {
-      String code = buildWordCode(word);
-      codeToCount.put(code, codeToCount.getOrDefault(code, 0) + 1);
+      WordKey wordKey = buildWordKey(word);
+      wordKeyToCount.put(wordKey, wordKeyToCount.getOrDefault(wordKey, 0) + 1);
     }
 
     int result = 0;
-    int[] counts = new int[26];
+    long middleHash1 = 0;
+    long middleHash2 = 0;
     for (int i = 1; i < length - 1; ++i) {
-      ++counts[S[i] - 'a'];
+      middleHash1 += PLACE_VALUES_1[S[i] - 'a'];
+      middleHash2 += PLACE_VALUES_2[S[i] - 'a'];
     }
     for (int i = length - 1; i < S.length; ++i) {
       char begin = S[i - length + 1];
       char end = S[i];
 
-      String code = buildCode(begin, end, counts);
-      if (codeToCount.containsKey(code)) {
-        result += codeToCount.remove(code);
+      WordKey wordKey = new WordKey(begin, end, middleHash1, middleHash2);
+      if (wordKeyToCount.containsKey(wordKey)) {
+        result += wordKeyToCount.remove(wordKey);
 
-        if (codeToCount.isEmpty()) {
+        if (wordKeyToCount.isEmpty()) {
           break;
         }
       }
 
-      --counts[S[i - length + 2] - 'a'];
-      ++counts[end - 'a'];
+      middleHash1 -= PLACE_VALUES_1[S[i - length + 2] - 'a'];
+      middleHash2 -= PLACE_VALUES_2[S[i - length + 2] - 'a'];
+
+      middleHash1 += PLACE_VALUES_1[end - 'a'];
+      middleHash2 += PLACE_VALUES_2[end - 'a'];
     }
 
     return result;
   }
 
-  static String buildWordCode(String word) {
-    int[] counts = new int[26];
+  static WordKey buildWordKey(String word) {
+    long middleHash1 = 0;
+    long middleHash2 = 0;
     for (int i = 1; i < word.length() - 1; ++i) {
-      ++counts[word.charAt(i) - 'a'];
+      middleHash1 += PLACE_VALUES_1[word.charAt(i) - 'a'];
+      middleHash2 += PLACE_VALUES_2[word.charAt(i) - 'a'];
     }
 
-    return buildCode(word.charAt(0), word.charAt(word.length() - 1), counts);
+    return new WordKey(word.charAt(0), word.charAt(word.length() - 1), middleHash1, middleHash2);
+  }
+}
+
+class WordKey {
+  char begin;
+  char end;
+  long middleHash1;
+  long middleHash2;
+
+  WordKey(char begin, char end, long middleHash1, long middleHash2) {
+    this.begin = begin;
+    this.end = end;
+    this.middleHash1 = middleHash1;
+    this.middleHash2 = middleHash2;
   }
 
-  static String buildCode(char begin, char end, int[] counts) {
-    StringBuilder result = new StringBuilder().append(begin).append(end);
-    for (int i = 0; i < counts.length; ++i) {
-      if (counts[i] != 0) {
-        result.append((char) ('a' + i)).append(counts[i]);
-      }
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(begin, end, middleHash1, middleHash2);
+  }
 
-    return result.toString();
+  @Override
+  public boolean equals(Object obj) {
+    WordKey other = (WordKey) obj;
+
+    return begin == other.begin
+        && end == other.end
+        && middleHash1 == other.middleHash1
+        && middleHash2 == other.middleHash2;
   }
 }
