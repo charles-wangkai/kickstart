@@ -1,13 +1,11 @@
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -43,71 +41,58 @@ public class Solution {
     int[] x = buildValues(K, values1[2], values2[2], A[2], B[2], C[2], M[2]);
     int[] y = buildValues(K, values1[3], values2[3], A[3], B[3], C[3], M[3]);
 
-    NavigableMap<Integer, List<Integer>> posToTowerIndices = new TreeMap<>();
-    for (int i = 0; i < p.length; ++i) {
-      if (!posToTowerIndices.containsKey(p[i])) {
-        posToTowerIndices.put(p[i], new ArrayList<>());
-      }
-      posToTowerIndices.get(p[i]).add(i);
+    Element[] elements = new Element[N + K];
+    for (int i = 0; i < N; ++i) {
+      elements[i] = new Element(p[i], h[i]);
     }
-    for (int i = 0; i < x.length; ++i) {
-      if (!posToTowerIndices.containsKey(x[i])) {
-        posToTowerIndices.put(x[i], new ArrayList<>());
-      }
+    for (int i = N; i < elements.length; ++i) {
+      elements[i] = new Element(x[i - N], -1);
     }
+    Arrays.sort(elements, Comparator.comparing(element -> element.pos));
 
     Map<Integer, Integer> posToMaxHeight = new HashMap<>();
+    for (int xi : x) {
+      posToMaxHeight.put(xi, -1);
+    }
 
     int prevPos = -1;
     int prevMaxHeight = -1;
-    for (int pos : posToTowerIndices.keySet()) {
-      posToMaxHeight.put(pos, -1);
-
+    for (Element element : elements) {
+      int maxHeight = -1;
       if (prevPos != -1) {
-        int maxHeight = prevMaxHeight - (pos - prevPos);
-        posToMaxHeight.put(pos, Math.max(posToMaxHeight.get(pos), maxHeight));
-
-        prevPos = pos;
-        prevMaxHeight = maxHeight;
+        maxHeight = prevMaxHeight - (element.pos - prevPos);
+      }
+      if (element.towerHeight != -1) {
+        maxHeight = Math.max(maxHeight, element.towerHeight);
       }
 
-      List<Integer> towerIndices = posToTowerIndices.get(pos);
-      for (int towerIndex : towerIndices) {
-        int maxHeight = h[towerIndex];
-        if (prevPos != -1) {
-          maxHeight = Math.max(maxHeight, prevMaxHeight - (pos - prevPos));
-        }
-
-        posToMaxHeight.put(pos, Math.max(posToMaxHeight.get(pos), maxHeight));
-
-        prevPos = pos;
-        prevMaxHeight = maxHeight;
+      if (posToMaxHeight.containsKey(element.pos)) {
+        posToMaxHeight.put(element.pos, Math.max(posToMaxHeight.get(element.pos), maxHeight));
       }
+
+      prevPos = element.pos;
+      prevMaxHeight = maxHeight;
     }
 
     prevPos = -1;
     prevMaxHeight = -1;
-    for (int pos : posToTowerIndices.descendingKeySet()) {
+    for (int i = elements.length - 1; i >= 0; --i) {
+      Element element = elements[i];
+
+      int maxHeight = -1;
       if (prevPos != -1) {
-        int maxHeight = prevMaxHeight - (prevPos - pos);
-        posToMaxHeight.put(pos, Math.max(posToMaxHeight.get(pos), maxHeight));
-
-        prevPos = pos;
-        prevMaxHeight = maxHeight;
+        maxHeight = prevMaxHeight - (prevPos - element.pos);
+      }
+      if (element.towerHeight != -1) {
+        maxHeight = Math.max(maxHeight, element.towerHeight);
       }
 
-      List<Integer> towerIndices = posToTowerIndices.get(pos);
-      for (int towerIndex : towerIndices) {
-        int maxHeight = h[towerIndex];
-        if (prevPos != -1) {
-          maxHeight = Math.max(maxHeight, prevMaxHeight - (prevPos - pos));
-        }
-
-        posToMaxHeight.put(pos, Math.max(posToMaxHeight.get(pos), maxHeight));
-
-        prevPos = pos;
-        prevMaxHeight = maxHeight;
+      if (posToMaxHeight.containsKey(element.pos)) {
+        posToMaxHeight.put(element.pos, Math.max(posToMaxHeight.get(element.pos), maxHeight));
       }
+
+      prevPos = element.pos;
+      prevMaxHeight = maxHeight;
     }
 
     return (int) IntStream.range(0, K).filter(i -> posToMaxHeight.get(x[i]) >= y[i]).count();
@@ -122,5 +107,15 @@ public class Solution {
     }
 
     return values;
+  }
+}
+
+class Element {
+  int pos;
+  int towerHeight;
+
+  Element(int pos, int towerHeight) {
+    this.pos = pos;
+    this.towerHeight = towerHeight;
   }
 }
