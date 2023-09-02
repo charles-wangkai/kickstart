@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int PREFIX_DIGIT_NUM = 16;
   static final long P_LIMIT = 1_000_000_000_000_000_000L;
 
