@@ -4,8 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
+  static final int R_LIMIT = 100;
+  static final int C_LIMIT = 100;
+
   public static void main(String[] args) {
+    int[][][] right = new int[R_LIMIT][C_LIMIT][C_LIMIT + 1];
+    int[][][] down = new int[R_LIMIT][C_LIMIT][R_LIMIT + 1];
+    int[][][][] rightTotals = new int[R_LIMIT][C_LIMIT][R_LIMIT][C_LIMIT];
+    int[][][][] downTotals = new int[R_LIMIT][C_LIMIT][R_LIMIT][C_LIMIT];
+
     Scanner sc = new Scanner(System.in);
 
     int T = sc.nextInt();
@@ -25,13 +33,21 @@ public class Solution {
         words[i] = sc.next();
       }
 
-      System.out.println(String.format("Case #%d: %s", tc, solve(grid, words)));
+      System.out.println(
+          String.format(
+              "Case #%d: %s", tc, solve(right, down, rightTotals, downTotals, grid, words)));
     }
 
     sc.close();
   }
 
-  static String solve(char[][] grid, String[] words) {
+  static String solve(
+      int[][][] right,
+      int[][][] down,
+      int[][][][] rightTotals,
+      int[][][][] downTotals,
+      char[][] grid,
+      String[] words) {
     int R = grid.length;
     int C = grid[0].length;
 
@@ -47,7 +63,6 @@ public class Solution {
       }
     }
 
-    int[][][] right = new int[R][C][C + 1];
     for (int r = 0; r < R; ++r) {
       for (int c = 0; c < C; ++c) {
         for (int k = 1; c + k - 1 < C; ++k) {
@@ -63,7 +78,6 @@ public class Solution {
       }
     }
 
-    int[][][] down = new int[R][C][R + 1];
     for (int r = 0; r < R; ++r) {
       for (int c = 0; c < C; ++c) {
         for (int k = 1; r + k - 1 < R; ++k) {
@@ -79,7 +93,6 @@ public class Solution {
       }
     }
 
-    int[][][][] rightTotals = new int[R][C][R][C];
     for (int r1 = 0; r1 < R; ++r1) {
       int[][] rightColumnSums = new int[C][C + 1];
       for (int r2 = r1; r2 < R; ++r2) {
@@ -99,7 +112,6 @@ public class Solution {
       }
     }
 
-    int[][][][] downTotals = new int[R][C][R][C];
     for (int c1 = 0; c1 < C; ++c1) {
       int[][] downRowSums = new int[R][R + 1];
       for (int c2 = c1; c2 < C; ++c2) {
