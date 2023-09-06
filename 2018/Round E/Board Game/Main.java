@@ -1,4 +1,4 @@
-// https://codingcompetitions.withgoogle.com/kickstart/round/0000000000050ff5/0000000000051184#analysis
+// https://github.com/google/coding-competitions-archive/raw/main/kickstart/2018/round_e/board_game/analysis.pdf
 // https://www.topcoder.com/thrive/articles/Binary%20Indexed%20Trees#2d
 
 import java.util.ArrayList;
@@ -14,14 +14,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.IntStream;
 
-public class Solution {
-  static final int BATTLEFIELD_NUM = 3;
+public class Main {
   static final int MIN_N = 3;
   static final int MAX_N = 5;
   static final int MAX_VALUE = 3003;
 
   static int[][] tree = new int[MAX_VALUE + 2][MAX_VALUE + 2];
-  static List<int[]>[] indicesLists;
+  static int[][][] indicesLists;
 
   public static void main(String[] args) {
     buildIndicesLists();
@@ -31,11 +30,11 @@ public class Solution {
     int T = sc.nextInt();
     for (int tc = 1; tc <= T; ++tc) {
       int N = sc.nextInt();
-      int[] A = new int[BATTLEFIELD_NUM * N];
+      int[] A = new int[3 * N];
       for (int i = 0; i < A.length; ++i) {
         A[i] = sc.nextInt();
       }
-      int[] B = new int[BATTLEFIELD_NUM * N];
+      int[] B = new int[3 * N];
       for (int i = 0; i < B.length; ++i) {
         B[i] = sc.nextInt();
       }
@@ -46,17 +45,16 @@ public class Solution {
     sc.close();
   }
 
-  @SuppressWarnings("unchecked")
   static void buildIndicesLists() {
-    indicesLists = new List[MAX_N + 1];
+    indicesLists = new int[MAX_N + 1][][];
     for (int i = MIN_N; i <= MAX_N; ++i) {
       indicesLists[i] = buildIndicesList(i);
     }
   }
 
   static double solve(int N, int[] A, int[] B) {
-    int[][] aSumArrays = buildSumArrays(N, A);
-    int[][] bSumArrays = buildSumArrays(N, B);
+    int[][] aSumArrays = buildSumArrays(N, A, true);
+    int[][] bSumArrays = buildSumArrays(N, B, false);
 
     NavigableMap<Integer, Integer> sumToValue = buildSumToValue(bSumArrays);
     int[][] aValueArrays = buildValueArrays(aSumArrays, sumToValue);
@@ -64,29 +62,31 @@ public class Solution {
 
     int[] winNums = new int[aSumArrays.length];
 
-    for (int p = 0; p < BATTLEFIELD_NUM; ++p) {
-      init(tree);
-      for (int[] bValueArray : bValueArrays) {
-        update(tree, bValueArray[p], bValueArray[(p + 1) % BATTLEFIELD_NUM], 1);
-      }
-      for (int i = 0; i < winNums.length; ++i) {
-        winNums[i] +=
-            read(tree, aValueArrays[i][p] - 1, aValueArrays[i][(p + 1) % BATTLEFIELD_NUM] - 1);
-      }
-    }
-
     init(tree);
+
     int bIndex = 0;
     for (int i = 0; i < winNums.length; ++i) {
       while (bIndex != bValueArrays.length && bValueArrays[bIndex][0] < aValueArrays[i][0]) {
         update(tree, bValueArrays[bIndex][1], bValueArrays[bIndex][2], 1);
+        update(tree, bValueArrays[bIndex][2], bValueArrays[bIndex][1], 1);
         ++bIndex;
       }
 
       winNums[i] -= 2 * read(tree, aValueArrays[i][1] - 1, aValueArrays[i][2] - 1);
     }
 
-    return (double) Arrays.stream(winNums).max().getAsInt() / bValueArrays.length;
+    for (int i = bIndex; i < bValueArrays.length; ++i) {
+      update(tree, bValueArrays[i][1], bValueArrays[i][2], 1);
+      update(tree, bValueArrays[i][2], bValueArrays[i][1], 1);
+    }
+    for (int i = 0; i < winNums.length; ++i) {
+      winNums[i] +=
+          read(tree, aValueArrays[i][0] - 1, aValueArrays[i][1] - 1)
+              + read(tree, aValueArrays[i][1] - 1, aValueArrays[i][2] - 1)
+              + read(tree, aValueArrays[i][2] - 1, aValueArrays[i][0] - 1);
+    }
+
+    return (double) Arrays.stream(winNums).max().getAsInt() / (bValueArrays.length * 2);
   }
 
   static void init(int[][] tree) {
@@ -165,16 +165,23 @@ public class Solution {
     }
   }
 
-  static List<int[]> buildIndicesList(int n) {
+  static int[][] buildIndicesList(int n) {
     List<int[]> indicesList = new ArrayList<>();
     search(indicesList, n, IntStream.range(0, 3 * n).toArray(), 0);
 
-    return indicesList;
+    return indicesList.stream()
+        .sorted(
+            Comparator.<int[], Integer>comparing(
+                indices ->
+                    (indices[0] < indices[n] && indices[n] < indices[2 * n])
+                        ? 0
+                        : ((indices[n] < indices[2 * n]) ? 1 : 2)))
+        .toArray(int[][]::new);
   }
 
   static void search(List<int[]> indicesList, int n, int[] indices, int depth) {
     if (depth == indices.length) {
-      indicesList.add(Arrays.copyOf(indices, indices.length));
+      indicesList.add(indices.clone());
 
       return;
     }
@@ -188,14 +195,13 @@ public class Solution {
     }
   }
 
-  static int[][] buildSumArrays(int N, int[] values) {
-    int[][] sumArrays = new int[indicesLists[N].size()][BATTLEFIELD_NUM];
+  static int[][] buildSumArrays(int N, int[] values, boolean totalNormalized) {
+    int[][] sumArrays = new int[indicesLists[N].length / (totalNormalized ? 6 : 2)][3];
     for (int i = 0; i < sumArrays.length; ++i) {
       for (int j = 0; j < 3 * N; ++j) {
-        sumArrays[i][j / N] += values[indicesLists[N].get(i)[j]];
+        sumArrays[i][j / N] += values[indicesLists[N][i][j]];
       }
     }
-
     Arrays.sort(sumArrays, Comparator.comparing(sumArray -> sumArray[0]));
 
     return sumArrays;
