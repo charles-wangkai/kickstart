@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int SMALL_N_LIMIT = 100;
 
   public static void main(String[] args) {
