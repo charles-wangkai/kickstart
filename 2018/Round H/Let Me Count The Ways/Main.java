@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int MODULUS = 1_000_000_007;
   static final int N_LIMIT = 100000;
   static final int M_LIMIT = 100000;
