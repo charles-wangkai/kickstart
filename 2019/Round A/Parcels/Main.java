@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class Solution {
+public class Main {
   static int[] R_OFFSETS = {-1, 0, 1, 0};
   static int[] C_OFFSETS = {0, 1, 0, -1};
 
