@@ -1,12 +1,16 @@
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
+  static final int LIMIT_N = 400_000;
+
+  static int[] lowers = new int[LIMIT_N * 2];
+  static int[] uppers = new int[LIMIT_N * 2];
+  static int[] counts = new int[LIMIT_N * 2];
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -75,7 +79,7 @@ public class Solution {
             .flatMap(i -> IntStream.of(L[i], R[i] + 1))
             .boxed()
             .sorted()
-            .mapToInt(x -> x)
+            .mapToInt(Integer::intValue)
             .distinct()
             .toArray();
     Map<Integer, Integer> valueToIndex =
@@ -86,47 +90,52 @@ public class Solution {
       --deltas[valueToIndex.get(R[i] + 1)];
     }
 
-    List<Range> ranges = new ArrayList<>();
+    int rangeCount = 0;
     int count = 0;
     for (int i = 0; i < values.length - 1; ++i) {
       count += deltas[i];
 
       if (count != 0) {
-        ranges.add(new Range(values[i], values[i + 1] - 1, count));
+        lowers[rangeCount] = values[i];
+        uppers[rangeCount] = values[i + 1] - 1;
+        counts[rangeCount] = count;
+
+        ++rangeCount;
       }
     }
 
-    long[] greaterNums = new long[ranges.size()];
+    long[] greaterNums = new long[rangeCount];
     long greaterNum = 0;
     for (int i = greaterNums.length - 1; i >= 0; --i) {
       greaterNums[i] = greaterNum;
 
-      Range range = ranges.get(i);
-      greaterNum += (range.upper - range.lower + 1L) * range.count;
+      greaterNum += (uppers[i] - lowers[i] + 1L) * counts[i];
     }
 
     BigInteger result = BigInteger.ZERO;
     for (int i = 0; i < K.length; ++i) {
       result =
           result.add(
-              BigInteger.valueOf((i + 1L) * computeKthScore(totalNum, ranges, greaterNums, K[i])));
+              BigInteger.valueOf(
+                  (i + 1L) * computeKthScore(totalNum, rangeCount, greaterNums, K[i])));
     }
 
     return result;
   }
 
-  static int computeKthScore(long totalNum, List<Range> ranges, long[] greaterNums, int Ki) {
+  static int computeKthScore(long totalNum, int rangeCount, long[] greaterNums, int Ki) {
     if (Ki > totalNum) {
       return 0;
     }
 
     int index = -1;
     int lowerIndex = 0;
-    int upperIndex = ranges.size() - 1;
+    int upperIndex = rangeCount - 1;
     while (lowerIndex <= upperIndex) {
       int middleIndex = (lowerIndex + upperIndex) / 2;
-      Range range = ranges.get(middleIndex);
-      if (greaterNums[middleIndex] + (range.upper - range.lower + 1L) * range.count >= Ki) {
+      if (greaterNums[middleIndex]
+              + (uppers[middleIndex] - lowers[middleIndex] + 1L) * counts[middleIndex]
+          >= Ki) {
         index = middleIndex;
         lowerIndex = middleIndex + 1;
       } else {
@@ -134,20 +143,6 @@ public class Solution {
       }
     }
 
-    Range range = ranges.get(index);
-
-    return (int) (range.upper - (Ki - greaterNums[index] - 1) / range.count);
-  }
-}
-
-class Range {
-  int lower;
-  int upper;
-  int count;
-
-  Range(int lower, int upper, int count) {
-    this.lower = lower;
-    this.upper = upper;
-    this.count = count;
+    return (int) (uppers[index] - (Ki - greaterNums[index] - 1) / counts[index]);
   }
 }
