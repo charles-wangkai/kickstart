@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int OBSTACLE = -100000;
   static final int[] R_OFFSETS = {-1, 0, 1, 0};
   static final int[] C_OFFSETS = {0, 1, 0, -1};
@@ -143,7 +143,7 @@ public class Solution {
     }
 
     return computeMaxEnergy(
-        new HashMap<Integer, Integer>(), strengths, trapToIndex, energies, nextTrapLists, exits, 0);
+        new HashMap<>(), strengths, trapToIndex, energies, nextTrapLists, exits, 0);
   }
 
   static int computeMaxEnergy(
