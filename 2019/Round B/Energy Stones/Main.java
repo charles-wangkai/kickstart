@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int TIME_LIMIT = 100;
 
   public static void main(String[] args) {
