@@ -2,10 +2,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -51,9 +50,16 @@ public class Solution {
   }
 
   static String buildKey(int[] skills, int mask) {
-    return IntStream.range(0, skills.length)
-        .filter(i -> (mask & (1 << i)) != 0)
-        .mapToObj(i -> String.valueOf(skills[i]))
-        .collect(Collectors.joining(","));
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < skills.length; ++i) {
+      if (((mask >> i) & 1) == 1) {
+        if (result.length() != 0) {
+          result.append(",");
+        }
+        result.append(skills[i]);
+      }
+    }
+
+    return result.toString();
   }
 }
