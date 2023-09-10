@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int LIMIT = 100000;
 
   static double[] factorialLogs;
