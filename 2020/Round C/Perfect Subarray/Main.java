@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int LIMIT = 10_000_000;
 
   static int[] squares;
@@ -44,16 +44,33 @@ public class Solution {
 
     long result = 0;
     int total = Arrays.stream(A).sum();
+    int maxSubArraySum = computeMaxSubArraySum(A);
     int firstSum = 0;
     for (int i = 0; i < A.length; ++i) {
       lastSumToCount.put(lastSum, lastSumToCount.get(lastSum) - 1);
 
       for (int square : squares) {
+        if (square > maxSubArraySum) {
+          break;
+        }
+
         result += lastSumToCount.getOrDefault(total - firstSum - square, 0);
       }
 
       firstSum += A[i];
       lastSum -= A[i];
+    }
+
+    return result;
+  }
+
+  static int computeMaxSubArraySum(int[] A) {
+    int result = 0;
+    int sum = 0;
+    for (int x : A) {
+      sum += x;
+      result = Math.max(result, sum);
+      sum = Math.max(sum, 0);
     }
 
     return result;
