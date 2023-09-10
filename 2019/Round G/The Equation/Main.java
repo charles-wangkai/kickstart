@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int BIT_NUM = 50;
 
   public static void main(String[] args) {
