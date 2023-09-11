@@ -1,14 +1,15 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -42,13 +43,13 @@ public class Solution {
             .toArray();
 
     int[] rightGreaterIndices = new int[D.length];
-    Stack<Integer> stack = new Stack<>();
+    Deque<Integer> stack = new ArrayDeque<>();
     for (int i = rightGreaterIndices.length - 1; i >= 0; --i) {
-      while (!stack.empty() && D[i] > D[stack.peek()]) {
+      while (!stack.isEmpty() && D[i] > D[stack.peek()]) {
         stack.pop();
       }
 
-      rightGreaterIndices[i] = stack.empty() ? D.length : stack.peek();
+      rightGreaterIndices[i] = stack.isEmpty() ? D.length : stack.peek();
       stack.push(i);
     }
 
