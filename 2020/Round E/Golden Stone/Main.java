@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final long LIMIT = 1_000_000_000_000L;
 
   public static void main(String[] args) {
