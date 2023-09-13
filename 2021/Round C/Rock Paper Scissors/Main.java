@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class Solution {
+public class Main {
   static final char[] CHOICES = {'R', 'S', 'P'};
   static final int ROUND_NUM = 60;
 
