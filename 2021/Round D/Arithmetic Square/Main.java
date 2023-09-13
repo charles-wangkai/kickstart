@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int SIZE = 3;
 
   public static void main(String[] args) {
