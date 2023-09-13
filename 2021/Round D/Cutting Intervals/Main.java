@@ -1,30 +1,33 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 import java.util.SortedMap;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-public class Solution {
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
+public class Main {
+  public static void main(String[] args) throws Throwable {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    int T = sc.nextInt();
+    StringTokenizer st = new StringTokenizer(br.readLine());
+    int T = Integer.parseInt(st.nextToken());
     for (int tc = 1; tc <= T; ++tc) {
-      int N = sc.nextInt();
-      long C = sc.nextLong();
+      st = new StringTokenizer(br.readLine());
+      int N = Integer.parseInt(st.nextToken());
+      long C = Long.parseLong(st.nextToken());
       long[] L = new long[N];
       long[] R = new long[N];
       for (int i = 0; i < N; ++i) {
-        L[i] = sc.nextLong();
-        R[i] = sc.nextLong();
+        st = new StringTokenizer(br.readLine());
+        L[i] = Long.parseLong(st.nextToken());
+        R[i] = Long.parseLong(st.nextToken());
       }
 
       System.out.println(String.format("Case #%d: %d", tc, solve(L, R, C)));
     }
-
-    sc.close();
   }
 
   static long solve(long[] L, long[] R, long C) {
