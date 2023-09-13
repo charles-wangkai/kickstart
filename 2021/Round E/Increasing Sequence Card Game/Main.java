@@ -3,7 +3,7 @@
 
 import java.util.Scanner;
 
-public class Solution {
+public class Main {
   static final int EXACT_LIMIT = 100_000_000;
   static final double EULER_CONSTANT = 0.577215664901532;
 
