@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
 
@@ -23,7 +23,7 @@ public class Solution {
   static long computeBoringNum(long limit) {
     int[] digits = String.valueOf(limit).chars().map(c -> c - '0').toArray();
 
-    long result = IntStream.range(1, digits.length).mapToLong(Solution::pow5).sum();
+    long result = IntStream.range(1, digits.length).mapToLong(Main::pow5).sum();
     int index = 0;
     while (index != digits.length) {
       for (int d = 0; d < digits[index]; ++d) {
