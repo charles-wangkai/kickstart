@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int ALPHABET_SIZE = 26;
 
   public static void main(String[] args) {
