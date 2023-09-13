@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution {
+public class Main {
   static final String SEPARATOR = "-";
 
   public static void main(String[] args) {
