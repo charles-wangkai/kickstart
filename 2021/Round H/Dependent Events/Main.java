@@ -7,11 +7,16 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main implements Runnable {
   static final int MODULUS = 1_000_000_007;
   static final int DENOMINATOR = 1_000_000;
 
   public static void main(String[] args) {
+    new Thread(null, new Main(), "Main", 1 << 26).start();
+  }
+
+  @Override
+  public void run() {
     Scanner sc = new Scanner(System.in);
 
     int T = sc.nextInt();
