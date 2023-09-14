@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.Set;
 
-public class Solution {
+public class Main {
   static final Set<Character> VOWELS = Set.of('a', 'e', 'i', 'o', 'u');
 
   public static void main(String[] args) {
