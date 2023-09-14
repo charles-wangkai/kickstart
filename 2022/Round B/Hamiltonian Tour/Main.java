@@ -1,11 +1,16 @@
 import java.util.Scanner;
 
-public class Solution {
+public class Main implements Runnable {
   static final char[] MOVES = {'E', 'S', 'W', 'N'};
   static final int[] R_OFFSETS = {0, 1, 0, -1};
   static final int[] C_OFFSETS = {1, 0, -1, 0};
 
   public static void main(String[] args) {
+    new Thread(null, new Main(), "Main", 1 << 26).start();
+  }
+
+  @Override
+  public void run() {
     Scanner sc = new Scanner(System.in);
 
     int T = sc.nextInt();
