@@ -3,7 +3,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int DIGIT_NUM = 10;
 
   public static void main(String[] args) {
