@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class Solution {
+public class Main {
   static final int DIGIT_NUM = 12;
 
   static List<int[]> countsList;
@@ -27,12 +27,12 @@ public class Solution {
 
   static void buildCountsList() {
     countsList = new ArrayList<>();
-    search(new int[10], 1, DIGIT_NUM);
+    search(new int[10], 1, DIGIT_NUM, 0, 1);
   }
 
-  static void search(int[] counts, int index, int rest) {
+  static void search(int[] counts, int index, int rest, int digitSum, long digitProduct) {
     if (index == counts.length) {
-      if (isInteresting(toDigits(counts))) {
+      if (digitSum != 0 && digitProduct % digitSum == 0) {
         countsList.add(counts.clone());
       }
 
@@ -41,7 +41,12 @@ public class Solution {
 
     for (int i = 0; i <= rest; ++i) {
       counts[index] = i;
-      search(counts, index + 1, rest - i);
+      search(
+          counts,
+          index + 1,
+          rest - i,
+          digitSum + index * counts[index],
+          digitProduct * pow(index, counts[index]));
     }
   }
 
@@ -91,17 +96,6 @@ public class Solution {
 
   static int[] toDigits(long x) {
     return String.valueOf(x).chars().map(c -> c - '0').toArray();
-  }
-
-  static int[] toDigits(int[] counts) {
-    List<Integer> digits = new ArrayList<>();
-    for (int i = 1; i < counts.length; ++i) {
-      for (int j = 0; j < counts[i]; ++j) {
-        digits.add(i);
-      }
-    }
-
-    return digits.stream().mapToInt(Integer::intValue).toArray();
   }
 
   static boolean isInteresting(int[] digits) {
