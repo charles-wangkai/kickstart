@@ -7,7 +7,7 @@ import java.util.Scanner;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class Solution {
+public class Main {
   static final int X_LIMIT = 100000;
 
   public static void main(String[] args) {
