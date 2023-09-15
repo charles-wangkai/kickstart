@@ -1,28 +1,31 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.stream.IntStream;
 
-public class Solution {
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
+public class Main {
+  public static void main(String[] args) throws Throwable {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    int T = sc.nextInt();
+    StringTokenizer st = new StringTokenizer(br.readLine());
+    int T = Integer.parseInt(st.nextToken());
     for (int tc = 1; tc <= T; ++tc) {
-      int N = sc.nextInt();
-      int M = sc.nextInt();
-      int K = sc.nextInt();
+      st = new StringTokenizer(br.readLine());
+      int N = Integer.parseInt(st.nextToken());
+      int M = Integer.parseInt(st.nextToken());
+      int K = Integer.parseInt(st.nextToken());
       int[] A = new int[M];
       int[] B = new int[M];
       for (int i = 0; i < M; ++i) {
-        A[i] = sc.nextInt() - 1;
-        B[i] = sc.nextInt() - 1;
+        st = new StringTokenizer(br.readLine());
+        A[i] = Integer.parseInt(st.nextToken()) - 1;
+        B[i] = Integer.parseInt(st.nextToken()) - 1;
       }
 
       System.out.println(String.format("Case #%d: %d", tc, solve(N, A, B, K)));
     }
-
-    sc.close();
   }
 
   static int solve(int N, int[] A, int[] B, int K) {
