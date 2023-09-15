@@ -1,33 +1,37 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.SortedMap;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-public class Solution {
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
+public class Main {
+  public static void main(String[] args) throws Throwable {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    int T = sc.nextInt();
+    StringTokenizer st = new StringTokenizer(br.readLine());
+    int T = Integer.parseInt(st.nextToken());
     for (int tc = 1; tc <= T; ++tc) {
-      int N = sc.nextInt();
-      int K = sc.nextInt();
-      int X = sc.nextInt();
-      int D = sc.nextInt();
-      int M = sc.nextInt();
+      st = new StringTokenizer(br.readLine());
+      int N = Integer.parseInt(st.nextToken());
+      int K = Integer.parseInt(st.nextToken());
+      int X = Integer.parseInt(st.nextToken());
+      int D = Integer.parseInt(st.nextToken());
+      st = new StringTokenizer(br.readLine());
+      int M = Integer.parseInt(st.nextToken());
       int[] P = new int[M];
       int[] L = new int[M];
       int[] R = new int[M];
       for (int i = 0; i < M; ++i) {
-        P[i] = sc.nextInt() - 1;
-        L[i] = sc.nextInt();
-        R[i] = sc.nextInt();
+        st = new StringTokenizer(br.readLine());
+        P[i] = Integer.parseInt(st.nextToken()) - 1;
+        L[i] = Integer.parseInt(st.nextToken());
+        R[i] = Integer.parseInt(st.nextToken());
       }
 
       System.out.println(String.format("Case #%d: %d", tc, solve(N, K, X, D, P, L, R)));
     }
-
-    sc.close();
   }
 
   @SuppressWarnings("unchecked")
