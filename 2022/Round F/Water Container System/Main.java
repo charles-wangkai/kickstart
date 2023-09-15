@@ -2,8 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Solution {
+public class Main implements Runnable {
   public static void main(String[] args) {
+    new Thread(null, new Main(), "Main", 1 << 26).start();
+  }
+
+  @Override
+  public void run() {
     Scanner sc = new Scanner(System.in);
 
     int T = sc.nextInt();
